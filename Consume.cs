@@ -31,7 +31,7 @@ namespace SER.PayuSdk
             _apiLogin = apiLogin;
             _baseUrl = !sandBox ? Constants.BASE_URL : Constants.BASE_URL_SANDBOX;
             _client = new RestClient(_baseUrl);
-            _logger = logger.CreateLogger("Wompi");
+            _logger = logger.CreateLogger("Payu");
             _sandBox = sandBox;
         }
 
