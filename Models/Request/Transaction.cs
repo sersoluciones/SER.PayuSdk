@@ -15,9 +15,11 @@ namespace SER.PayuSdk.Models.Request
 
         // TC
         VISA,
+        VISA_DEBIT,
         DINERS,
         MASTERCARD,
         AMEX,
+        CODENSA,
 
         // EFECTIVO
         BALOTO,
@@ -81,14 +83,14 @@ namespace SER.PayuSdk.Models.Request
         [JsonPropertyName("transactionResponse")]
         public TransactionResponse TransactionResponse { get; set; }
 
-        //[JsonPropertyName("deviceSessionId")]
-        //public string DeviceSessionId { get; set; }
+        [JsonPropertyName("deviceSessionId")]
+        public string DeviceSessionId { get; set; }
 
         //[JsonPropertyName("cookie")]
         //public string Cookie { get; set; }
 
-        //[JsonPropertyName("userAgent")]
-        //public string UserAgent { get; set; }
+        [JsonPropertyName("userAgent")]
+        public string UserAgent { get; set; }
 
         //[JsonPropertyName("threeDomainSecure")]
         //public ThreeDomainSecure ThreeDomainSecure { get; set; }

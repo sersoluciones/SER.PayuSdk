@@ -7,6 +7,16 @@ using System.Threading.Tasks;
 
 namespace SER.PayuSdk.Models.Response
 {
+    public enum TransactionState
+    {
+        APPROVED,
+        DECLINED,
+        ERROR,
+        EXPIRED,
+        PENDING,
+        SUBMITTED
+    }
+
     public class TransactionResponse
     {
         [JsonPropertyName("orderId")]
@@ -16,11 +26,15 @@ namespace SER.PayuSdk.Models.Response
         public string TransactionId { get; set; }
 
         /// <summary>
-        /// PENDING
-        /// DECLINED
+        /// APPROVED -> Transacción aprobada
+        /// DECLINED -> Transacción rechazada
+        /// ERROR -> Error procesando la transacción
+        /// EXPIRED -> Transacción expirada
+        /// PENDING -> Transacción pendiente o en validación
+        /// SUBMITTED -> Transacción enviada a la entidad financiera y por algún motivo no terminó su procesamiento. Sólo aplica para la API de reportes.
         /// </summary>
         [JsonPropertyName("state")]
-        public string State { get; set; }
+        public TransactionState State { get; set; }
 
         [JsonPropertyName("paymentNetworkResponseCode")]
         public string PaymentNetworkResponseCode { get; set; }

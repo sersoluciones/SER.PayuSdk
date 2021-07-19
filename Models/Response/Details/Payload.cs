@@ -23,7 +23,7 @@ namespace SER.PayuSdk.Models.Response.Details
         public long AccountId { get; set; }
 
         [JsonPropertyName("status")]
-        public string Status { get; set; }
+        public TransactionState Status { get; set; }
 
         [JsonPropertyName("referenceCode")]
         public string ReferenceCode { get; set; }
@@ -55,7 +55,7 @@ namespace SER.PayuSdk.Models.Response.Details
 
 
         [JsonPropertyName("state")]
-        public string State { get; set; }
+        public TransactionState State { get; set; }
 
         [JsonPropertyName("paymentNetworkResponseCode")]
         public object PaymentNetworkResponseCode { get; set; }
