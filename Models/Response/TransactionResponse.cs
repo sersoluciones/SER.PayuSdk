@@ -67,13 +67,16 @@ namespace SER.PayuSdk.Models.Response
         public string TransactionTime { get; set; }
 
         [JsonPropertyName("operationDate")]
-        public string OperationDate { get; set; }
+        public long OperationDate { get; set; }
 
         [JsonPropertyName("referenceQuestionnaire")]
         public object ReferenceQuestionnaire { get; set; }
 
         [JsonPropertyName("extraParameters")]
         public ExtraParameters ExtraParameters { get; set; }
+
+        [JsonPropertyName("additionalInfo")]
+        public AdditionalInfo AdditionalInfo { get; set; }
     }
 
     public partial class ExtraParameters
@@ -106,6 +109,27 @@ namespace SER.PayuSdk.Models.Response
          */
         [JsonPropertyName("travelAgencyAuthorizationCode")]
         public string TravelAgencyAuthorizationCode { get; set; }
+    }
+
+    public class AdditionalInfo
+    {
+        [JsonPropertyName("paymentNetwork")]
+        public string PaymentNetwork { get; set; }
+
+        [JsonPropertyName("rejectionType")]
+        public string RejectionType { get; set; }
+
+        [JsonPropertyName("responseNetworkMessage")]
+        public string ResponseNetworkMessage { get; set; }
+
+        [JsonPropertyName("travelAgencyAuthorizationCode")]
+        public string TravelAgencyAuthorizationCode { get; set; }
+
+        [JsonPropertyName("cardType")]
+        public object CardType { get; set; }
+
+        [JsonPropertyName("transactionType")]
+        public string TransactionType { get; set; }
     }
 
 }

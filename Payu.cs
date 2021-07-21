@@ -24,7 +24,8 @@ namespace SER.PayuSdk
 
         #endregion
 
-        public Payu(ILoggerFactory logger, IHttpContextAccessor contextAccessor, string apiLogin, string apiKey, string merchantId, string accountId, bool sandBox = false)
+        public Payu(ILoggerFactory logger, IHttpContextAccessor contextAccessor, string apiLogin = "", string apiKey = "", string merchantId = "",
+            string accountId = "", bool sandBox = false)
         {
             //_logger = logger.CreateLogger("Payu");
             _apiKey = apiKey;
@@ -58,13 +59,14 @@ namespace SER.PayuSdk
             if (ping == null || ping.Code != "SUCCESS") return null;
             var transaction = new GeneralTransaction
             {
-                Transaction = model
+                Transaction = model,
+                Type = TypeRequest.SUBMIT_TRANSACTION
             };
             transaction.Transaction.IpAddress = string.Format("{0}", _httpContextAccessor.HttpContext.Connection.RemoteIpAddress);
             transaction.Transaction.UserAgent = _httpContextAccessor.HttpContext.Request.Headers["User-Agent"];
             //transaction.Transaction.DeviceSessionId = GetDeviceSessionId(transaction.Transaction.UserAgent);
             transaction.Transaction.Order.AccountId = _accountId;
-            transaction.Transaction.Order.Signature = GenerateSignature(transaction.Transaction.Order, _apiKey, _merchantId);
+            // transaction.Transaction.Order.Signature = GenerateSignature(transaction.Transaction.Order, _apiKey, _merchantId);
             return await _consume.ExecuteAsync<BaseResponse>(_consume.MakePostRequest(endPoint: Constants.PAYMENT_ENDPOINT, model: transaction));
         }
 
@@ -132,7 +134,7 @@ namespace SER.PayuSdk
         /// <returns></returns>
         public static string GenerateSignature(Order order, string apiKey, string merchantId)
         {
-            var valueToEvaluate = new string[] { apiKey, merchantId, order.ReferenceCode, 
+            var valueToEvaluate = new string[] { apiKey, merchantId, order.ReferenceCode,
                 Math.Round(order.AdditionalValues.TxValue.Value, 2).ToString(),
                 order.AdditionalValues.TxValue.Currency };
             return ComputeSha256Hash(string.Join("~", valueToEvaluate));

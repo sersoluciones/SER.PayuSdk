@@ -10,7 +10,7 @@ namespace SER.PayuSdk.Models.Request
     public class ExtraParameters
     {
         [JsonPropertyName("INSTALLMENTS_NUMBER")]
-        public int InstallmentsNumber { get; set; }
+        public int? InstallmentsNumber { get; set; }
 
         [JsonPropertyName("RESPONSE_URL")]
         public string ResponseUrl { get; set; }

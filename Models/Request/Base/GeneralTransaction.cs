@@ -17,7 +17,5 @@ namespace SER.PayuSdk.Models.Request
         /// </summary>
         [JsonPropertyName("transaction")]
         public Transaction Transaction { get; set; }
-
-        public new TypeRequest Type { get; set; } = TypeRequest.SUBMIT_TRANSACTION;
     }
 }
