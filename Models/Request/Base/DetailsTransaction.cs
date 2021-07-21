@@ -12,6 +12,5 @@ namespace SER.PayuSdk.Models.Request
         [JsonPropertyName("details")]
         public Details Details { get; set; }
 
-        public new TypeRequest Type { get; set; } = TypeRequest.ORDER_DETAIL;
     }
 }
