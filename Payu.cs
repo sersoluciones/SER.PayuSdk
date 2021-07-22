@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using SER.PayuSdk.Models.Request;
 using SER.PayuSdk.Models.Request.Tokenization;
 using SER.PayuSdk.Models.Response;
+using SER.PayuSdk.Models.Response.Details;
 using SER.PayuSdk.Utils;
 using System;
 using System.Collections.Generic;
@@ -21,13 +22,14 @@ namespace SER.PayuSdk
         private string _merchantId = string.Empty;
         private string _accountId = string.Empty;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILogger _logger;
 
         #endregion
 
         public Payu(ILoggerFactory logger, IHttpContextAccessor contextAccessor, string apiLogin = "", string apiKey = "", string merchantId = "",
             string accountId = "", bool sandBox = false)
         {
-            //_logger = logger.CreateLogger("Payu");
+            _logger = logger.CreateLogger("Payu");
             _apiKey = apiKey;
             _merchantId = merchantId;
             _accountId = accountId;
@@ -132,20 +134,24 @@ namespace SER.PayuSdk
         /// Generar firma para cada transaccion
         /// </summary>
         /// <returns></returns>
-        public static string GenerateSignature(Order order, string apiKey, string merchantId)
+        public static string GenerateSignature(Payload payload, string apiKey, string merchantId, string value, string state)
         {
-            var valueToEvaluate = new string[] { apiKey, merchantId, order.ReferenceCode,
-                Math.Round(order.AdditionalValues.TxValue.Value, 2).ToString(),
-                order.AdditionalValues.TxValue.Currency };
-            return ComputeSha256Hash(string.Join("~", valueToEvaluate));
+            var valueToEvaluate = new string[] { apiKey, merchantId, payload.ReferenceCode,
+                value, payload.AdditionalValues.TxValue.Currency, state };
+            var toEvaluate = string.Join("~", valueToEvaluate);
+            //Console.WriteLine($"-------------- toEvaluate {toEvaluate}");
+            return ComputeMd5Hash(toEvaluate);
         }
 
-        private static string ComputeSha256Hash(string rawData)
+        private static string ComputeMd5Hash(string rawData)
         {
-            // Create a SHA256   
-            using SHA256 sha256Hash = SHA256.Create();
-            // ComputeHash - returns byte array  
-            byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
+            var md5 = new MD5CryptoServiceProvider();
+
+            //compute hash from the bytes of text  
+            md5.ComputeHash(Encoding.ASCII.GetBytes(rawData));
+
+            //get hash result after compute it  
+            byte[] bytes = md5.Hash;
 
             // Convert byte array to a string   
             StringBuilder builder = new();
@@ -160,7 +166,7 @@ namespace SER.PayuSdk
         private string GetDeviceSessionId(string userAgent)
         {
             var os = new ClientOS(userAgent);
-            return ComputeSha256Hash(string.Format("{0}{1}{2}", os.Name, os.Version, new DateTimeOffset(DateTime.UtcNow).ToUnixTimeMilliseconds().ToString()));
+            return ComputeMd5Hash(string.Format("{0}{1}{2}", os.Name, os.Version, new DateTimeOffset(DateTime.UtcNow).ToUnixTimeMilliseconds().ToString()));
         }
     }
 }
