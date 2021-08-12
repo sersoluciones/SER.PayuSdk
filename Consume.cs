@@ -44,6 +44,9 @@ namespace SER.PayuSdk
                 RequestFormat = DataFormat.Json
             };
 
+            request.AddHeader("Content-Type", "application/json");
+            request.AddHeader("Accept", "application/json");
+
             var options = new JsonSerializerOptions
             {
                 WriteIndented = true,
@@ -65,6 +68,7 @@ namespace SER.PayuSdk
 
         public async Task<T> ExecuteAsync<T>(RestRequest request) where T : class
         {
+            _logger.LogInformation($"------------------ BASE URL: {_baseUrl}");
             var response = await _client.ExecuteAsync(request);
 
             try
