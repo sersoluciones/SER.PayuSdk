@@ -67,7 +67,7 @@ namespace SER.PayuSdk.Models.Response
         public string TransactionTime { get; set; }
 
         [JsonPropertyName("operationDate")]
-        public long OperationDate { get; set; }
+        public long? OperationDate { get; set; }
 
         [JsonPropertyName("referenceQuestionnaire")]
         public object ReferenceQuestionnaire { get; set; }
@@ -84,18 +84,24 @@ namespace SER.PayuSdk.Models.Response
         [JsonPropertyName("BANK_URL")]
         public string BankUrl { get; set; }
 
+        [JsonPropertyName("BANK_REFERENCED_CODE")]
+        public string BankReferenceCode { get; set; }
+
+        [JsonPropertyName("PAYMENT_WAY_ID")]
+        public string PaymentWayId { get; set; }
+
 
         /**
          * EFECTIVO
          */
         [JsonPropertyName("EXPIRATION_DATE")]
-        public long ExpirationDate { get; set; }
+        public long? ExpirationDate { get; set; }
 
         [JsonPropertyName("URL_PAYMENT_RECEIPT_PDF")]
         public string UrlPaymentReceiptPdf { get; set; }
 
         [JsonPropertyName("REFERENCE")]
-        public long Reference { get; set; }
+        public long? Reference { get; set; }
 
         [JsonPropertyName("CHECKOUT_VERSION")]
         public string CheckoutVersion { get; set; }
@@ -126,7 +132,7 @@ namespace SER.PayuSdk.Models.Response
         public string TravelAgencyAuthorizationCode { get; set; }
 
         [JsonPropertyName("cardType")]
-        public object CardType { get; set; }
+        public string CardType { get; set; }
 
         [JsonPropertyName("transactionType")]
         public string TransactionType { get; set; }

@@ -90,9 +90,9 @@ namespace SER.PayuSdk
             }
             catch (Exception e)
             {
-                //_logger.LogError($"Response: {response.Content}");
+                _logger.LogError($"Response: {response?.Content}");
                 _logger.LogError(e.ToString());
-                throw;
+                return null;
             }
         }
 
