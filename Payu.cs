@@ -43,10 +43,10 @@ namespace SER.PayuSdk
         /// <returns></returns>
         public async Task<BaseResponse> Ping()
         {
-            return await _consume.ExecuteAsync<BaseResponse>(_consume.MakePostRequest(endPoint: Constants.PAYMENT_ENDPOINT, model: new BaseRequest
+            return await _consume.MakePostClientRequest<BaseResponse, BaseRequest>(endPoint: Constants.PAYMENT_ENDPOINT, model: new BaseRequest
             {
                 Type = TypeRequest.PING
-            }));
+            });
         }
 
 
@@ -69,7 +69,7 @@ namespace SER.PayuSdk
             //transaction.Transaction.DeviceSessionId = GetDeviceSessionId(transaction.Transaction.UserAgent);
             transaction.Transaction.Order.AccountId = _accountId;
             // transaction.Transaction.Order.Signature = GenerateSignature(transaction.Transaction.Order, _apiKey, _merchantId);
-            return await _consume.ExecuteAsync<BaseResponse>(_consume.MakePostRequest(endPoint: Constants.PAYMENT_ENDPOINT, model: transaction));
+            return await _consume.MakePostClientRequest<BaseResponse, GeneralTransaction>(endPoint: Constants.PAYMENT_ENDPOINT, model: transaction);
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace SER.PayuSdk
         /// <returns></returns>
         public async Task<BaseResponse> CreateTokenCard(BaseTokenization model)
         {
-            return await _consume.ExecuteAsync<BaseResponse>(_consume.MakePostRequest(endPoint: Constants.PAYMENT_ENDPOINT, model: model));
+            return await _consume.MakePostClientRequest<BaseResponse, BaseTokenization>(endPoint: Constants.PAYMENT_ENDPOINT, model: model);
         }
 
 
@@ -89,10 +89,10 @@ namespace SER.PayuSdk
         /// <returns></returns>
         public async Task<BaseResponse> GetPSEFinancialInstitutions()
         {
-            return await _consume.ExecuteAsync<BaseResponse>(_consume.MakePostRequest(endPoint: Constants.PAYMENT_ENDPOINT, model: new BaseRequest
+            return await _consume.MakePostClientRequest<BaseResponse, BaseRequest>(endPoint: Constants.PAYMENT_ENDPOINT, model: new BaseRequest
             {
                 Type = TypeRequest.GET_PAYMENT_METHODS
-            }));
+            });
         }
 
         /// <summary>
@@ -102,14 +102,14 @@ namespace SER.PayuSdk
         /// <returns></returns>
         public async Task<BaseResponse> CheckTransaction(long orderId)
         {
-            return await _consume.ExecuteAsync<BaseResponse>(_consume.MakePostRequest(endPoint: Constants.CONSULT_ENDPOINT, model: new DetailsTransaction
+            return await _consume.MakePostClientRequest<BaseResponse, DetailsTransaction>(endPoint: Constants.CONSULT_ENDPOINT, model: new DetailsTransaction
             {
                 Type = TypeRequest.ORDER_DETAIL,
                 Details = new Details
                 {
                     OrderId = orderId
                 }
-            }));
+            });
         }
 
         /// <summary>
@@ -119,14 +119,14 @@ namespace SER.PayuSdk
         /// <returns></returns>
         public async Task<BaseResponse> CheckTransaction(string referenceCode)
         {
-            return await _consume.ExecuteAsync<BaseResponse>(_consume.MakePostRequest(endPoint: Constants.CONSULT_ENDPOINT, model: new DetailsTransaction
+            return await _consume.MakePostClientRequest<BaseResponse, DetailsTransaction>(endPoint: Constants.CONSULT_ENDPOINT, model: new DetailsTransaction
             {
                 Type = TypeRequest.ORDER_DETAIL_BY_REFERENCE_CODE,
                 Details = new Details
                 {
                     ReferenceCode = referenceCode
                 }
-            }));
+            });
         }
 
 

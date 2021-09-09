@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -35,7 +37,56 @@ namespace SER.PayuSdk
             _sandBox = sandBox;
         }
 
-        
+        public async Task<Out> MakePostClientRequest<Out, T>(string endPoint = "", T model = null) where T : BaseRequest where Out : class
+        {
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            };
+            model.Test = _sandBox;
+            model.Merchant = new Merchant
+            {
+                ApiKey = _apiKey,
+                ApiLogin = _apiLogin
+            };
+            options.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+            var jsonString = JsonSerializer.Serialize(model, options);
+
+            _logger.LogInformation($"Request:\n{jsonString}");
+            _logger.LogInformation(_baseUrl + endPoint);
+
+            using var client = new HttpClient();
+
+            var response = await client.PostAsJsonAsync(_baseUrl + endPoint, model, options);
+            try
+            {
+                _logger.LogInformation($" ------------- StatusCode {response.StatusCode}");
+
+                var jsonSerializerOptions = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                    WriteIndented = true,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+                };
+                jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+
+                if (response.Content != null && (response.StatusCode == System.Net.HttpStatusCode.OK || response.StatusCode == System.Net.HttpStatusCode.Created))
+                {
+                    string content = response.Content.ReadAsStringAsync().Result;
+                    _logger.LogInformation($"Response:\n{content}");
+                    return JsonSerializer.Deserialize<Out>(content, jsonSerializerOptions);
+                }
+                return null;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Response: {response?.Content?.ReadAsStringAsync()?.Result}");
+                _logger.LogError(e.ToString());
+                return null;
+            }
+        }
+
         public RestRequest MakePostRequest<T>(string endPoint = "", T model = null) where T : BaseRequest
         {
             _logger.LogInformation($"------------------ ENDPOINT: {endPoint}");
