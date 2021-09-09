@@ -6,8 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -57,8 +60,14 @@ namespace SER.PayuSdk
             _logger.LogInformation(_baseUrl + endPoint);
 
             using var client = new HttpClient();
+            client.BaseAddress = new Uri(_baseUrl);
 
-            var response = await client.PostAsJsonAsync(_baseUrl + endPoint, model, options);
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+            client.DefaultRequestHeaders.Add(
+                "User-Agent",
+                "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36");
+
+            var response = await client.PostAsJsonAsync(endPoint, model, options);
             try
             {
                 _logger.LogInformation($" ------------- StatusCode {response.StatusCode}");
@@ -79,12 +88,44 @@ namespace SER.PayuSdk
                 }
                 return null;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
                 _logger.LogError($"Response: {response?.Content?.ReadAsStringAsync()?.Result}");
-                _logger.LogError(e.ToString());
+                _logger.LogError($"Failed - {ex.Message}");
+
+                var innerException = ex.InnerException;
+
+                while (innerException != null)
+                {
+                    _logger.LogError($"Inner - {innerException.Message}");
+                    innerException = innerException.InnerException;
+                }
+
+
                 return null;
             }
+        }
+
+        private HttpClientHandler GetHttpClientHandler()
+        {
+            var httpHandler = new HttpClientHandler
+            {
+                // Return `true` to allow certificates that are untrusted/invalid
+                //ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
+                ClientCertificateOptions = ClientCertificateOption.Manual,
+                //specify to use TLS 1.2 as default connection
+                SslProtocols = SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12,
+                ServerCertificateCustomValidationCallback = delegate { return true; },
+                //ServerCertificateCustomValidationCallback = (httpRequestMessage, certificate, chain, sslPolicyErrors) => true
+            };
+
+            var certificatePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "");
+
+            _logger.LogInformation($"------------------ certificatePath: {certificatePath}");
+            X509Certificate2 certificate = new(certificatePath + @"certificate.pfx", "Sersol0110");
+
+            httpHandler.ClientCertificates.Add(certificate);
+            return httpHandler;
         }
 
         public RestRequest MakePostRequest<T>(string endPoint = "", T model = null) where T : BaseRequest
